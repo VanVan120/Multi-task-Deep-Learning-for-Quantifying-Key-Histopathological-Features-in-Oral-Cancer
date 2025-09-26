@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 3
+names: ['Mitotic Figures', 'Multiple Nucleol', 'Nuclear Hyperchromatism']
+
+roboflow:
+  workspace: oral-cancer-zui33
+  project: oral-cancer-1mnve
+  version: 2
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/oral-cancer-zui33/oral-cancer-1mnve/dataset/2
