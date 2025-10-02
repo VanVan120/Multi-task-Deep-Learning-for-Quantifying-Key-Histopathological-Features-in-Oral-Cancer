@@ -1,0 +1,25 @@
+seed: 42
+
+data:
+  train_dir: data/patches/train
+  val_dir: data/patches/val
+  test_dir: data/patches/test
+  image_size: 224
+  batch_size: 32
+  num_workers: 4
+
+model:
+  name: resnet18
+  pretrained: true
+  num_classes: 2
+
+train:
+  epochs: 10
+  lr: 1.0e-4
+  weight_decay: 1.0e-4
+  mixed_precision: true
+  early_stop_patience: 5
+
+out_dir: outputs/tvnt
+checkpoint_path: models_ckpt/tvnt_resnet18.pt
+log_dir: outputs/tvnt/logs
