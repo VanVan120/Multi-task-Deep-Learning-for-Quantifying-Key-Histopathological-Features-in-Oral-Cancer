@@ -1,0 +1,139 @@
+# Multi-task Deep Learning for Oral Cancer - .gitignore
+
+# Environment and dependencies
+venv/
+env/
+conda-env/
+.env
+.venv
+.conda
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+.jupyter/
+
+# IDE
+.vscode/settings.json
+.vscode/launch.json
+.idea/
+*.swp
+*.swo
+*~
+
+# Data files (large medical images)
+data/raw/*.svs
+data/raw/*.ndpi
+data/raw/*.tiff
+data/raw/*.mrxs
+data/processed/patches/
+data/processed/*.h5
+data/processed/*.hdf5
+data/processed/*.zarr
+
+# Model outputs
+outputs/models/*.pth
+outputs/models/*.ckpt
+outputs/models/*.pkl
+outputs/logs/
+outputs/results/
+
+# Large files
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Temporary files
+temp/
+tmp/
+.tmp/
+
+# OS generated
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Experiment tracking
+wandb/
+mlruns/
+.neptune/
+
+# TensorBoard
+tb_logs/
+lightning_logs/
+
+# Config overrides (keep template configs)
+configs/local_*.yaml
+configs/experiment_*.yaml
+
+# QuPath temporary files
+QuPath Annotation/data/server/
+QuPath Annotation/.qptmp/
+
+# Documentation builds
+docs/_build/
+site/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Profiling
+.prof
+
+# Environment variables
+.env.local
+.env.production
+.env.development
+
+# Security
+*.pem
+*.key
+secrets.txt
+
+# Backup files
+*.bak
+*.backup
+*~backup~
+
+# Lock files that might cause conflicts
+poetry.lock
+Pipfile.lock
