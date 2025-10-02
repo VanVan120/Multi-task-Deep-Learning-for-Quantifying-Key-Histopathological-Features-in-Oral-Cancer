@@ -1,0 +1,1 @@
+{"type": "FeatureCollection", "features": [{"type": "Feature", "geometry": {"type": "Polygon", "coordinates": [[[79.727, 297.632], [28.069, 483.244], [56.458, 530.833], [363.847, 627.733], [336.351, 19.77], [131.385, 15.324], [79.727, 297.632]]]}, "properties": {"classification": "Multiple Nucleol"}}]}
