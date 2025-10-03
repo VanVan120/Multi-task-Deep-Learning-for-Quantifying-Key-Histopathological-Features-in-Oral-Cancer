@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.venv/
+venv/
+.env
+
+# Data / Outputs
+data/
+outputs/
+models_ckpt/
+runs/
+wandb/
+*.tif
+*.svs
+*.ndpi
+
+# Editors
+.vscode/
+.idea/
