@@ -1,1 +1,0 @@
-{"type": "FeatureCollection", "features": [{"type": "Feature", "geometry": {"type": "Polygon", "coordinates": [[[4, 0], [639.5, 0], [639.5, 639.5], [4, 639.5], [4, 0]]]}, "properties": {"classification": "Nuclear Hyperchromatism"}}]}
