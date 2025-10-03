@@ -67,5 +67,22 @@ See `configs/tvnt.yaml`. Change paths, hyperparams, and checkpoint output.
 - If you have WSIs, use `scripts/extract_patches.py` to grid-sample patches.
 - For a quick smoke test, copy any small images into the ImageFolder layout.
 
+## Full Dataset (256px) Example
+```
+# Train with the converted dataset
+python -m src.training.run_unet_baseline \
+  --data-root "..\\Oral Cancer.v2i.yolov11\\dataset_seg_full_256png" \
+  --epochs 10 --img-size 256 --batch-size 8 --lr 1e-3 \
+  --outdir runs/unet_dataset256
+
+# Run validation inference and export overlays
+python -m src.inference.run_unet_infer \
+  --data-root "..\\Oral Cancer.v2i.yolov11\\dataset_seg_full_256png" \
+  --ckpt runs/unet_dataset256/best.ckpt \
+  --split val \
+  --save-dir outputs/unet_dataset256_val \
+  --thr 0.4 --save-probmaps
+```
+
 ## API
 POST `/predict/tvnt` with `multipart/form-data` field `file` (image). Returns class probabilities.

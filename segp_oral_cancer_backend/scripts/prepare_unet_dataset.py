@@ -169,7 +169,10 @@ def process_case(case_dir: Path, split: str, dst_root: Path, by_case: bool, dry_
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Prepare dataset folders for U-Net training")
-    parser.add_argument("--src", required=True, type=Path, help="Source directory containing case folders")
+    parser.add_argument("--src", type=Path, help="Single root containing all case folders (legacy mode)")
+    parser.add_argument("--src-train", type=Path, help="Root containing train split case folders")
+    parser.add_argument("--src-val", type=Path, help="Root containing val split case folders")
+    parser.add_argument("--src-test", type=Path, help="Root containing test split case folders")
     parser.add_argument("--dst", required=True, type=Path, help="Destination root for the prepared dataset")
     parser.add_argument(
         "--train-cases",
@@ -193,43 +196,76 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--by-case", action="store_true", help="Organise output within split/case/ directories")
     parser.add_argument("--dry-run", action="store_true", help="Print actions without writing any files")
-    return parser.parse_args()
+    args = parser.parse_args()
+
+    multi_split_mode = any([args.src_train, args.src_val, args.src_test])
+    if not args.src and not multi_split_mode:
+        parser.error("Provide --src or at least one of --src-train/--src-val/--src-test")
+    if args.src and multi_split_mode:
+        parser.error("Use either --src or the per-split --src-<split> options, not both")
+
+    return args
 
 
 def main() -> None:
     args = parse_args()
 
-    if not args.src.exists():
-        raise FileNotFoundError(f"Source directory does not exist: {args.src}")
-    if not args.src.is_dir():
-        raise NotADirectoryError(f"Source path is not a directory: {args.src}")
-
-    train_cases = parse_case_list(args.train_cases)
-    val_cases = parse_case_list(args.val_cases)
-    test_cases = parse_case_list(args.test_cases)
+    multi_split_mode = any([args.src_train, args.src_val, args.src_test])
     only_cases = parse_case_list(args.only_cases)
-
-    for first, second in ((train_cases, val_cases), (train_cases, test_cases), (val_cases, test_cases)):
-        if first and second:
-            overlap = first & second
-            if overlap:
-                joined = ", ".join(sorted(overlap))
-                raise ValueError(f"Cases assigned to multiple splits: {joined}")
 
     summaries: list[CaseSummary] = []
     total_pairs = 0
     total_missing_images = 0
     total_missing_masks = 0
 
-    case_dirs = list(discover_cases(args.src))
-    if only_cases is not None:
-        case_dirs = [case for case in case_dirs if case.name in only_cases]
+    assigned: list[tuple[Path, str]] = []
 
-    for case_dir in case_dirs:
-        split = choose_split(case_dir.name, train_cases, val_cases, test_cases)
-        if split is None:
-            print(f"Skipping case '{case_dir.name}' (no split assigned)")
-            continue
+    if multi_split_mode:
+        split_roots = (
+            (args.src_train, "train"),
+            (args.src_val, "val"),
+            (args.src_test, "test"),
+        )
+        for root, split_name in split_roots:
+            if root is None:
+                continue
+            if not root.exists():
+                raise FileNotFoundError(f"Source directory does not exist: {root}")
+            if not root.is_dir():
+                raise NotADirectoryError(f"Source path is not a directory: {root}")
+            for case_dir in discover_cases(root):
+                if only_cases and case_dir.name not in only_cases:
+                    continue
+                assigned.append((case_dir, split_name))
+    else:
+        if not args.src.exists():
+            raise FileNotFoundError(f"Source directory does not exist: {args.src}")
+        if not args.src.is_dir():
+            raise NotADirectoryError(f"Source path is not a directory: {args.src}")
+
+        train_cases = parse_case_list(args.train_cases)
+        val_cases = parse_case_list(args.val_cases)
+        test_cases = parse_case_list(args.test_cases)
+
+        for first, second in ((train_cases, val_cases), (train_cases, test_cases), (val_cases, test_cases)):
+            if first and second:
+                overlap = first & second
+                if overlap:
+                    joined = ", ".join(sorted(overlap))
+                    raise ValueError(f"Cases assigned to multiple splits: {joined}")
+
+        case_dirs = list(discover_cases(args.src))
+        if only_cases is not None:
+            case_dirs = [case for case in case_dirs if case.name in only_cases]
+
+        for case_dir in case_dirs:
+            split = choose_split(case_dir.name, train_cases, val_cases, test_cases)
+            if split is None:
+                print(f"Skipping case '{case_dir.name}' (no split assigned)")
+                continue
+            assigned.append((case_dir, split))
+
+    for case_dir, split in assigned:
         summary = process_case(case_dir, split, args.dst, args.by_case, args.dry_run)
         summaries.append(summary)
         total_pairs += summary.pairs
